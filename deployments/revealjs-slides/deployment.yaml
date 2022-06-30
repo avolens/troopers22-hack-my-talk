@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: slides
+  namespace: troopers22
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: slides
+  template:
+    metadata:
+      labels:
+        app: slides
+    spec:
+      containers:
+      - name: slides
+        image: CONTAINERNAME HERE
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 100m
+            memory: 200Mi
+        ports:
+        - containerPort: 80
+      nodeSelector:
+        app: slides
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: slides
+  namespace: troopers22
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30000
+  selector:
+    app: slides
+  type: NodePort

@@ -1,0 +1,6 @@
+1. Check which NodeSelectors are used in the deployment.yaml
+2. Label your node
+3. If possible delete the label from the other node
+
+Mitigation:
+Turn on the nodeRestriction admission controller and use labels with a node-restriction.kubernetes.io/ prefix

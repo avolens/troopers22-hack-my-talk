@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reveal-js-cdn
+  namespace: reveal-js-cdn
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reveal-js-cdn
+  template:
+    metadata:
+      labels:
+        app: reveal-js-cdn
+    spec:
+      containers:
+      - name: reveal-js-cdn
+        image: IMAGENAME HERE
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 100m
+            memory: 200Mi
+        ports:
+        - containerPort: 8000
+      nodeSelector:
+        app: cdn
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: reveal-js-cdn
+  namespace: reveal-js-cdn
+spec:
+  ports:
+  - port: 80
+    targetPort: 8000
+    nodePort: 31000
+  selector:
+    app: reveal-js-cdn
+  type: NodePort

